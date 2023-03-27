@@ -21,14 +21,14 @@
 		@foreach (var patient in Model)
 		{
 			<tr>
-				<td>@patient.firstName</td>
-				<td>@patient.lastName</td>
-				<td>@patient.email</td>
-				<td>@patient.phone</td>
-				<td>@patient.address</td>
-				<td>@patient.PESEL</td>
-				<td>@patient.dateOfBirth.ToString("dd-MM-yyyy")</td>
-				<td><a href="Patients/View/@patient.Id">View</a></td>
+				<td>@patient.FirstName</td>
+				<td>@patient.LastName</td>
+				<td>@patient.Email</td>
+				<td>@patient.PhoneNumber</td>
+				<td>@patient.Address</td>
+				<td>@patient.Pesel</td>
+				<td>@patient.DateofBirth.ToString("dd-MM-yyyy")</td>
+				<td><a href="Patients/View/@patient.PatientId">View</a></td>
 			</tr>
 		}
 	</tbody>

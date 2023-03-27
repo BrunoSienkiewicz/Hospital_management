@@ -33,14 +33,14 @@ namespace Hospital_Management.Controllers
         {
             var patient = new Patient()
             {
-                firstName = addPatientRequest.firstName,
-                lastName = addPatientRequest.lastName,
-                email = addPatientRequest.email,
-                phone = addPatientRequest.phone,
-                address = addPatientRequest.address,
-                PESEL = addPatientRequest.PESEL,
-                dateOfBirth = addPatientRequest.dateOfBirth,
-                userId = addPatientRequest.userId
+                FirstName = addPatientRequest.FirstName,
+                LastName = addPatientRequest.LastName,
+                Email = addPatientRequest.Email,
+                PhoneNumber = addPatientRequest.PhoneNumber,
+                Address = addPatientRequest.Address,
+                Pesel = addPatientRequest.Pesel,
+                DateofBirth = addPatientRequest.DateofBirth,
+                UserId = addPatientRequest.UserId
             };
 
             await hospitalDbContext.Patients.AddAsync(patient);
