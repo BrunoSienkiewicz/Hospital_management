@@ -1,9 +1,10 @@
 ﻿using Hospital_Management.Models.Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_Management.Data
 {
-    public class HospitalDbContext : DbContext
+    public class HospitalDbContext : IdentityDbContext
     {
         public HospitalDbContext(DbContextOptions options) : base(options)
         {
