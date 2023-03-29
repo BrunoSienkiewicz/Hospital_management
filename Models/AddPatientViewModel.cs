@@ -1,4 +1,7 @@
-﻿namespace Hospital_Management.Models
+﻿using Hospital_Management.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace Hospital_Management.Models
 {
     public class AddPatientViewModel
     {

@@ -15,6 +15,7 @@
 			<th scope="col">Address</th>
 			<th scope="col">PESEL</th>
 			<th scope="col">Date of birth</th>
+			<th scope="col">Actions</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -29,7 +30,10 @@
 				<td>@patient.Pesel</td>
 				<td>@patient.DateofBirth.ToString("dd-MM-yyyy")</td>
 				<td><a href="Patients/View/@patient.PatientId">View</a></td>
+				<td><a href="Patients/Delete/@patient.PatientId">Delete</a></td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+<button type="button" class="btn btn-primary" onclick="window.location.href = 'Patients/Add'">Add new patient</button>
