@@ -1,11 +1,11 @@
 ﻿using Hospital_Management.Data;
-using Hospital_Management.Models;
+using Hospital_Management.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_Management.Controllers
 {
-	public class LoginController : Controller
+    public class LoginController : Controller
 	{
 		private readonly HospitalDbContext hospitalDbContext;
 

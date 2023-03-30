@@ -26,8 +26,8 @@
 //        public async Task<IActionResult> Index(string pesel)
 //        {
 //            var patient = await hospitalDbContext.Patients.Where(p => p.Pesel.Contains(pesel)).FirstOrDefaultAsync();
-//			return View(patient);
-//		}
+//            return View(patient);
+//        }
 
 //        [HttpGet]
 //        public IActionResult Add()
@@ -42,7 +42,7 @@
 
 //            var patient = new Patient()
 //            {
-//                PatientId = maxId+1,
+//                PatientId = maxId + 1,
 //                FirstName = addPatientRequest.FirstName,
 //                LastName = addPatientRequest.LastName,
 //                Email = addPatientRequest.Email,
@@ -81,8 +81,8 @@
 //                return await Task.Run(() => View("View", viewModel));
 //            }
 
-//			return RedirectToAction("Index");
-//		}
+//            return RedirectToAction("Index");
+//        }
 
 //        [HttpPost]
 //        public async Task<IActionResult> View(UpdatePatientViewModel model)

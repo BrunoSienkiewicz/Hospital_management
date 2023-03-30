@@ -1,0 +1,35 @@
+﻿@using Hospital_Management.Models.ViewModels.Doctor;
+@model AddDoctorViewModel
+
+@{
+}
+
+<h1>Add Doctor</h1>
+<form method="post" , action="Add">
+    <div class="mb-3">
+        <label for="" class="form-label">First Name</label>
+        <input type="text" class="form-control" , asp-for="FirstName">
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Last Name</label>
+        <input type="text" class="form-control" , asp-for="LastName">
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Email</label>
+        <input type="email" class="form-control" , asp-for="Email">
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Specialty</label>
+        <input type="text" class="form-control" , asp-for="Speciality">
+    </div>
+
+    <div class="mb-3">
+        <label for="" class="form-label">Phone number</label>
+        <input type="number" class="form-control" , asp-for="PhoneNumber">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

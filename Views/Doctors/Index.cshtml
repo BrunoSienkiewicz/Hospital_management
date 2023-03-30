@@ -1,0 +1,35 @@
+﻿@model List<Hospital_Management.Models.Domain.Doctor>
+
+@{
+}
+
+<h1>Doctors</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">First Name</th>
+			<th scope="col">Last Name</th>
+			<th scope="col">Email</th>
+			<th scope="col">Speciality</th>
+			<th scope="col">PhoneNumber</th>
+			<th scope="col">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var doctor in Model)
+		{
+			<tr>
+				<td>@doctor.FirstName</td>
+				<td>@doctor.LastName</td>
+				<td>@doctor.Email</td>
+				<td>@doctor.Specialty</td>
+				<td>@doctor.PhoneNumber</td>
+				<td><a href="Patients/View/@doctor.DoctorId">View</a></td>
+				<td><a href="Patients/Delete/@doctor.DoctorId">Delete</a></td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<button type="button" class="btn btn-primary" onclick="window.location.href = 'Doctors/Add'">Add new doctor</button>

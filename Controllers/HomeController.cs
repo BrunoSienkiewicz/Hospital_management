@@ -1,4 +1,4 @@
-﻿using Hospital_Management.Models;
+﻿using Hospital_Management.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

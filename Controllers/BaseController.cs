@@ -11,7 +11,7 @@ namespace Hospital_Management.Controllers
 {
     public class BaseController<TEntity, TAddEntityModel, TUpdateEntityModel>: Controller where TEntity : class
     {
-        private readonly HospitalDbContext hospitalDbContext;
+        protected readonly HospitalDbContext hospitalDbContext;
         private readonly IMapper mapper;
         private readonly string IdName;
 

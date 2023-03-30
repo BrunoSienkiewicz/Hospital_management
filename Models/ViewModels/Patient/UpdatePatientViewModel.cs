@@ -1,10 +1,8 @@
-﻿using Hospital_Management.Data;
-using Microsoft.EntityFrameworkCore;
-
-namespace Hospital_Management.Models
+﻿namespace Hospital_Management.Models.ViewModels.Patient
 {
-    public class AddPatientViewModel
+    public class UpdatePatientViewModel
     {
+        public int PatientId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

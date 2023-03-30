@@ -1,4 +1,4 @@
-namespace Hospital_Management.Models
+namespace Hospital_Management.Models.ViewModels
 {
     public class ErrorViewModel
     {
