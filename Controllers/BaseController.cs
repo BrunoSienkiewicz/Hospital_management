@@ -12,8 +12,8 @@ namespace Hospital_Management.Controllers
     public class BaseController<TEntity, TAddEntityModel, TUpdateEntityModel>: Controller where TEntity : class
     {
         protected readonly HospitalDbContext hospitalDbContext;
-        private readonly IMapper mapper;
-        private readonly string IdName;
+        protected IMapper mapper;
+        protected readonly string IdName;
 
         public BaseController(HospitalDbContext hospitalDbContext)
         {
@@ -23,7 +23,7 @@ namespace Hospital_Management.Controllers
             {
                 cfg.AddProfile(new EntityMappingProfile<TAddEntityModel, TUpdateEntityModel, TEntity>());
             });
-            IMapper mapper = mapperConfig.CreateMapper();
+            mapper = mapperConfig.CreateMapper();
         }
         private string GetIdName()
         {
@@ -38,31 +38,50 @@ namespace Hospital_Management.Controllers
             return null;
         }
 
-        [HttpGet]
+        private async Task<TEntity> GetEntityById(int? id)
+        {
+            var parameter = Expression.Parameter(typeof(TEntity), "e");
+        	var predicate = Expression.Lambda<Func<TEntity, bool>>(
+                Expression.Equal(
+                Expression.PropertyOrField(parameter, IdName),
+                Expression.Constant(id)
+                ),
+				parameter
+			);
+			var entity = await hospitalDbContext.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            return entity;
+		}
+
+        private async Task<int> GetMaxId()
+        {
+			var parameter = Expression.Parameter(typeof(TEntity), "e");
+			var property = Expression.PropertyOrField(parameter, IdName);
+			var maxIdExpression = Expression.Lambda<Func<TEntity, int>>(property, parameter);
+            var maxId = await hospitalDbContext.Set<TEntity>()
+                .MaxAsync(maxIdExpression);
+
+			return maxId;
+		}
+
+		[HttpGet]
         public async Task<IActionResult> Index()
         {
             var entities = await hospitalDbContext.Set<TEntity>().ToListAsync();
             return View(entities);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Details(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-            var predicate = Expression.Lambda<Func<TEntity, bool>>(
-                Expression.Equal(
-                    Expression.PropertyOrField(parameter, IdName),
-                    Expression.Constant(id)
-                ),
-                parameter
-            );
-            var entity = await hospitalDbContext.Set<TEntity>().FirstOrDefaultAsync(predicate);
 
-            return View(entity);
+            var entity = await GetEntityById(id);
+            var entityModel = mapper.Map<TUpdateEntityModel>(entity);
+
+            return await Task.Run(() => View("View", entityModel));
         }
 
         [HttpGet]
@@ -71,18 +90,16 @@ namespace Hospital_Management.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Add(TAddEntityModel addModel)
-        //{
-        //    int maxId = await hospitalDbContext.Set<TEntity>().MaxAsync(e => e.Id);
+        [HttpPost]
+        public async Task<IActionResult> Add(TAddEntityModel addModel)
+        {
+            var entity = mapper.Map<TEntity>(addModel);
+			entity.GetType().GetProperty(IdName).SetValue(entity, await GetMaxId() + 1);
 
-        //    var entity = mapper.Map<TEntity>(addModel);
-        //    entity.Id = maxId + 1;
-
-        //    await hospitalDbContext.Set<TEntity>().AddAsync(entity);
-        //    await hospitalDbContext.SaveChangesAsync();
-        //    return RedirectToAction("Index");
-        //}
+			await hospitalDbContext.Set<TEntity>().AddAsync(entity);
+            await hospitalDbContext.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Update(TUpdateEntityModel updateModel)
@@ -94,22 +111,26 @@ namespace Hospital_Management.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-            var predicate = Expression.Lambda<Func<TEntity, bool>>(
-                Expression.Equal(
-                    Expression.PropertyOrField(parameter, IdName),
-                    Expression.Constant(id)
-                ),
-                parameter
-            );
-            var entity = await hospitalDbContext.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            var entity = await GetEntityById(id);
+            var model = mapper.Map<TUpdateEntityModel>(entity);
+
+			return await Task.Run(() => Delete(model));
+		}
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(TUpdateEntityModel model)
+        {
+			var parameter = Expression.Parameter(typeof(TUpdateEntityModel), "e");
+			var property = Expression.PropertyOrField(parameter, IdName);
+            var entityId = Expression.Lambda<Func<TUpdateEntityModel, int>>(property, parameter).Compile()(model);
+			var entity = await GetEntityById(entityId);
+
             hospitalDbContext.Set<TEntity>().Remove(entity);
             await hospitalDbContext.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-
     }
 }

@@ -8,6 +8,8 @@ namespace Hospital_Management.Data
         {
             CreateMap<TAddEntityModel, TEntity>();
             CreateMap<TUpdateEntityModel, TEntity>();
+            CreateMap<TEntity, TUpdateEntityModel>();
+            CreateMap<TEntity, TAddEntityModel>();
         }
     }
 }

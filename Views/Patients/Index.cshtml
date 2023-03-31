@@ -29,8 +29,10 @@
 				<td>@patient.Address</td>
 				<td>@patient.Pesel</td>
 				<td>@patient.DateofBirth.ToString("dd-MM-yyyy")</td>
-				<td><a href="Patients/View/@patient.PatientId">View</a></td>
-				<td><a href="Patients/Delete/@patient.PatientId">Delete</a></td>
+				<td>
+					<a href="Patients/Details/@patient.PatientId">Details</a>
+					<a href="Patients/Delete/@patient.PatientId">Delete</a>
+				</td>
 			</tr>
 		}
 	</tbody>
