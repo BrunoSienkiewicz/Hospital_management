@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Entities\" />
+    <Folder Include="Models\Domain\" />
   </ItemGroup>
 
 </Project>

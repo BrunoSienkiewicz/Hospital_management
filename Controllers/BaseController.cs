@@ -6,26 +6,29 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using AutoMapper;
 using System.Linq.Expressions;
+using Hospital_Management.Interfaces;
 
 namespace Hospital_Management.Controllers
 {
-    public class BaseController<TEntity, TAddEntityModel, TUpdateEntityModel>: Controller where TEntity : class
+    public class BaseController<TEntity, TAddEntityModel, TUpdateEntityModel, TEntityDto, TRepository>: Controller
+        where TEntity : class
+        where TRepository : IRepository<TEntity>
     {
-        protected readonly HospitalDbContext hospitalDbContext;
         protected IMapper mapper;
         protected readonly string IdName;
+        protected readonly TRepository entityRepository;
 
-        public BaseController(HospitalDbContext hospitalDbContext)
-        {
-            this.hospitalDbContext = hospitalDbContext;
-            this.IdName = GetIdName();
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new EntityMappingProfile<TAddEntityModel, TUpdateEntityModel, TEntity>());
-            });
-            mapper = mapperConfig.CreateMapper();
-        }
-        private string GetIdName()
+		public BaseController(TRepository entityRepository)
+		{
+			this.IdName = GetIdName();
+			var mapperConfig = new MapperConfiguration(cfg =>
+			{
+				cfg.AddProfile(new EntityMappingProfile<TAddEntityModel, TUpdateEntityModel, TEntity, TEntityDto>());
+			});
+			mapper = mapperConfig.CreateMapper();
+			this.entityRepository = entityRepository;
+		}
+		private string GetIdName()
         {
             var properties = typeof(TEntity).GetProperties();
             foreach (var property in properties)
@@ -38,36 +41,41 @@ namespace Hospital_Management.Controllers
             return null;
         }
 
-        private async Task<TEntity> GetEntityById(int? id)
+        protected async virtual Task<TUpdateEntityModel> mapToUpdateEntityModel(TEntity entity)
         {
-            var parameter = Expression.Parameter(typeof(TEntity), "e");
-        	var predicate = Expression.Lambda<Func<TEntity, bool>>(
-                Expression.Equal(
-                Expression.PropertyOrField(parameter, IdName),
-                Expression.Constant(id)
-                ),
-				parameter
-			);
-			var entity = await hospitalDbContext.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            var entityModel = mapper.Map<TUpdateEntityModel>(entity);
+            return entityModel;
+        }
+
+		protected async virtual Task<TEntity> mapToEntity(TAddEntityModel entityModel)
+		{
+            var entity = mapper.Map<TEntity>(entityModel);
             return entity;
 		}
 
-        private async Task<int> GetMaxId()
-        {
-			var parameter = Expression.Parameter(typeof(TEntity), "e");
-			var property = Expression.PropertyOrField(parameter, IdName);
-			var maxIdExpression = Expression.Lambda<Func<TEntity, int>>(property, parameter);
-            var maxId = await hospitalDbContext.Set<TEntity>()
-                .MaxAsync(maxIdExpression);
+		protected async virtual Task<TEntity> mapToEntity(TUpdateEntityModel entityModel)
+		{
+            var entity = mapper.Map<TEntity>(entityModel);
+            return entity;
+		}
 
-			return maxId;
+		protected async virtual Task<TAddEntityModel> mapToAddEntityModel(TEntity entity)
+		{
+            var entityModel = mapper.Map<TAddEntityModel>(entity);
+            return entityModel;
 		}
 
 		[HttpGet]
-        public async Task<IActionResult> Index()
+        public virtual async Task<IActionResult> Index()
         {
-            var entities = await hospitalDbContext.Set<TEntity>().ToListAsync();
-            return View(entities);
+            var entities = await entityRepository.GetAll();
+            List<TEntityDto> entitiesDto = new List<TEntityDto>();
+            foreach(var entity in  entities)
+            {
+                var entityDto = mapper.Map<TEntityDto>(entity);
+                entitiesDto.Add(entityDto);
+            }
+            return View(entitiesDto);
         }
 
         [HttpGet]
@@ -78,8 +86,8 @@ namespace Hospital_Management.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var entity = await GetEntityById(id);
-            var entityModel = mapper.Map<TUpdateEntityModel>(entity);
+            var entity = await entityRepository.GetEntityById(id);
+            var entityModel = await this.mapToUpdateEntityModel(entity);
 
             return await Task.Run(() => View("View", entityModel));
         }
@@ -91,45 +99,42 @@ namespace Hospital_Management.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(TAddEntityModel addModel)
+        public virtual async Task<IActionResult> Add(TAddEntityModel addModel)
         {
-            var entity = mapper.Map<TEntity>(addModel);
-			entity.GetType().GetProperty(IdName).SetValue(entity, await GetMaxId() + 1);
+            var entity = await this.mapToEntity(addModel);
+			entity.GetType().GetProperty(IdName).SetValue(entity, await entityRepository.GetMaxId() + 1);
 
-			await hospitalDbContext.Set<TEntity>().AddAsync(entity);
-            await hospitalDbContext.SaveChangesAsync();
+			await entityRepository.AddEntity(entity);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(TUpdateEntityModel updateModel)
+        public virtual async Task<IActionResult> Update(TUpdateEntityModel updateModel)
         {
-            var entity = mapper.Map<TEntity>(updateModel);
+            var entity = await this.mapToEntity(updateModel);
 
-            hospitalDbContext.Entry(entity).State = EntityState.Modified;
-            await hospitalDbContext.SaveChangesAsync();
+            await entityRepository.UpdateEntity(entity);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public virtual async Task<IActionResult> Delete(int id)
         {
-            var entity = await GetEntityById(id);
-            var model = mapper.Map<TUpdateEntityModel>(entity);
+            var entity = await entityRepository.GetEntityById(id);
+            var model = await this.mapToUpdateEntityModel(entity);
 
 			return await Task.Run(() => Delete(model));
 		}
 
         [HttpPost]
-        public async Task<IActionResult> Delete(TUpdateEntityModel model)
+        public virtual async Task<IActionResult> Delete(TUpdateEntityModel model)
         {
 			var parameter = Expression.Parameter(typeof(TUpdateEntityModel), "e");
 			var property = Expression.PropertyOrField(parameter, IdName);
             var entityId = Expression.Lambda<Func<TUpdateEntityModel, int>>(property, parameter).Compile()(model);
-			var entity = await GetEntityById(entityId);
+			var entity = await entityRepository.GetEntityById(entityId);
 
-            hospitalDbContext.Set<TEntity>().Remove(entity);
-            await hospitalDbContext.SaveChangesAsync();
+            await entityRepository.DeleteEntity(entity);
             return RedirectToAction("Index");
         }
     }

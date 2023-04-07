@@ -13,5 +13,9 @@ namespace Hospital_Management.Models.ViewModels.Patient
         public string Pesel { get; set; }
         public DateTime DateofBirth { get; set; }
         public int UserId { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+        public string UserType { get; set; }
     }
 }
