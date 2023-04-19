@@ -1,0 +1,33 @@
+﻿@model List<Hospital_Management.Models.Dto.AppointmentDto>
+
+@{
+}
+
+<h1>Appointments</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Patient</th>
+			<th scope="col">Doctor</th>
+			<th scope="col">Date</th>
+			<th scope="col">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var appointment in Model)
+		{
+			<tr>
+				<td>@appointment.PatientName</td>
+				<td>@appointment.DoctorName</td>
+				<td>@appointment.Date</td>
+				<td>
+					<a href="Appointments/Details/@appointment.AppointmentId">Details</a>
+					<a href="Appointments/Delete/@appointment.AppointmentId">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<button type="button" class="btn btn-primary" onclick="window.location.href = 'Appointments/Add'">Add new appointment</button>

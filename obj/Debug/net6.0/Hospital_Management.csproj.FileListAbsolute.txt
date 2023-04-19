@@ -86,3 +86,4 @@ E:\Hospital_Management\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.
 E:\Hospital_Management\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 E:\Hospital_Management\obj\Debug\net6.0\Hospital_Management.csproj.CopyComplete
 E:\Hospital_Management\bin\Debug\net6.0\AutoMapper.dll
+E:\Hospital_Management\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

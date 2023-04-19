@@ -65,6 +65,12 @@ namespace Hospital_Management.Controllers
             return entityModel;
 		}
 
+        protected async virtual Task<TEntityDto> mapToEntityDto(TEntity entity)
+        {
+			var entityDto = mapper.Map<TEntityDto>(entity);
+			return entityDto;
+		}
+
 		[HttpGet]
         public virtual async Task<IActionResult> Index()
         {
@@ -72,7 +78,7 @@ namespace Hospital_Management.Controllers
             List<TEntityDto> entitiesDto = new List<TEntityDto>();
             foreach(var entity in  entities)
             {
-                var entityDto = mapper.Map<TEntityDto>(entity);
+                var entityDto = await mapToEntityDto(entity);
                 entitiesDto.Add(entityDto);
             }
             return View(entitiesDto);
