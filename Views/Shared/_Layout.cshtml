@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,6 +8,25 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Hospital_Management.styles.css" asp-append-version="true" />
+    <script type="text/javascript">
+        $(document).ready(function() {
+           HttpCookieCollection cookies = Request.Cookies;
+           string tokenString = cookies["token"].Value;
+           $.ajax({
+              url: "/ValidateToken",
+              type: "POST",
+              data: {tokenString: tokenString},
+              success: function(data) {
+                    console.log('Token is valid');
+                 // handle success response
+              },
+              error: function() {
+                    console.log('Token is invalid or expired');
+                 // handle error response
+              }
+           });
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -18,14 +38,17 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                @if (TempData["UserType"]?.Equals("user") == true)
+                @if (ViewBag.UserType != null)
                 {
-                    @Html.Partial("_UserLayout")
+                    if (ViewBag.UserType == "user")
+                    {
+                        @Html.Partial("_UserLayout")
+                    }
+                    else if (ViewBag.UserType == "admin")
+                    {
+                        @Html.Partial("_AdminLayout")
+                    }
                 }
-                else if (TempData["UserType"]?.Equals("admin") == true)
-				{
-					@Html.Partial("_AdminLayout")
-				}
                 else
 				{
                     @Html.Partial("_DefaultLayout")

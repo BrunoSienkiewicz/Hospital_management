@@ -4,7 +4,9 @@ using Hospital_Management.Models.Domain;
 using Hospital_Management.Models.Dto;
 using Hospital_Management.Models.ViewModels.User;
 using Hospital_Management.Repositiory;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Hospital_Management.Controllers
 {
@@ -15,11 +17,6 @@ namespace Hospital_Management.Controllers
 		{
 			userManager = new UserManager(userRepository, configuration);
         }
-
-		public IActionResult Index()
-		{
-			return View();
-		}
 
 		public IActionResult LoginPage()
 		{
@@ -51,10 +48,8 @@ namespace Hospital_Management.Controllers
 			};
 
 			Response.Cookies.Append("jwt", token, cookieOptions);
-
-			var userType = user.UserType;
-
-			TempData["UserType"] = userType;
+			Response.Cookies.Append("username", user.Username, cookieOptions);
+			Response.Cookies.Append("userType", user.UserType, cookieOptions);
 
 			return RedirectToAction(nameof(HomeController.Index), "Home");
 		}
@@ -62,10 +57,30 @@ namespace Hospital_Management.Controllers
 		public async Task<IActionResult> Logout()
 		{ 
 			Response.Cookies.Delete("jwt");
-
-            TempData["UserType"] = null;
+            Response.Cookies.Delete("username");
+            Response.Cookies.Delete("userType");
 
 			return RedirectToAction(nameof(HomeController.Index), "Home");
 		}
+
+		public async Task<IActionResult> ValidateToken()
+		{
+            var token = Request.Cookies["jwt"];
+
+            if (token == null)
+			{
+                return Unauthorized();
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(token);
+
+			if (decodedToken.ValidTo < DateTime.UtcNow)
+			{
+				return Unauthorized();
+			}
+
+            return Ok();
+        }
 	}
 }

@@ -77,10 +77,29 @@ namespace Hospital_Management.Controllers
 				issuer: jwtConfig.Issuer,
 				audience: jwtConfig.Audience,
 				claims: claims,
-				expires: DateTime.UtcNow.AddDays(7),
+				expires: DateTime.UtcNow.AddHours(1),
 				signingCredentials: creds);
 
 			return new JwtSecurityTokenHandler().WriteToken(token);
 		}
+
+		public async Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
+		{
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(jwtConfig.Key);
+            var tokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(key),
+				ValidateIssuer = true,
+				ValidateAudience = true,
+				ValidateLifetime = true,
+				ClockSkew = TimeSpan.Zero
+			};
+
+			var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+
+            return principal;
+        }
 	}
 }

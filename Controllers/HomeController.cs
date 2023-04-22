@@ -15,6 +15,8 @@ namespace Hospital_Management.Controllers
 
         public IActionResult Index()
         {
+            var userType = Request.Cookies["userType"]?.ToString();
+            ViewBag.UserType = userType;
             return View();
         }
 

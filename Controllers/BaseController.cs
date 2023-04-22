@@ -71,8 +71,15 @@ namespace Hospital_Management.Controllers
 			return entityDto;
 		}
 
-		[HttpGet]
-        public virtual async Task<IActionResult> Index()
+        public IActionResult Index()
+        {
+            var userType = Request.Cookies["userType"]?.ToString();
+            ViewBag.UserType = userType;
+            return View();
+        }
+
+        [HttpGet]
+        public virtual async Task<IActionResult> GetAll()
         {
             var entities = await entityRepository.GetAll();
             List<TEntityDto> entitiesDto = new List<TEntityDto>();
