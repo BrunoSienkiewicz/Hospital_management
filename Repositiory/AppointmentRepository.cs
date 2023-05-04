@@ -47,5 +47,11 @@ namespace Hospital_Management.Repositiory
 			await hospitalDbContext.SaveChangesAsync();
 			return entity;
 		}
+
+		public async Task<List<Appointment>> GetByUserId(int userId)
+		{
+			var patient = await hospitalDbContext.Patients.FirstOrDefaultAsync(e => e.UserId == userId);
+            return await hospitalDbContext.Appointments.Where(e => e.PatientId == patient.PatientId).ToListAsync();
+        }
 	}
 }

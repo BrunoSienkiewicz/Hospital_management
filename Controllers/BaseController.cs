@@ -7,6 +7,7 @@ using System.Net;
 using AutoMapper;
 using System.Linq.Expressions;
 using Hospital_Management.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital_Management.Controllers
 {
@@ -27,7 +28,7 @@ namespace Hospital_Management.Controllers
 			});
 			mapper = mapperConfig.CreateMapper();
 			this.entityRepository = entityRepository;
-		}
+        }
 		private string GetIdName()
         {
             var properties = typeof(TEntity).GetProperties();
@@ -73,8 +74,6 @@ namespace Hospital_Management.Controllers
 
         public IActionResult Index()
         {
-            var userType = Request.Cookies["userType"]?.ToString();
-            ViewBag.UserType = userType;
             return View();
         }
 

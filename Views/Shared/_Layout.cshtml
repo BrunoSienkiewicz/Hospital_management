@@ -8,25 +8,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Hospital_Management.styles.css" asp-append-version="true" />
-    <script type="text/javascript">
-        $(document).ready(function() {
-           HttpCookieCollection cookies = Request.Cookies;
-           string tokenString = cookies["token"].Value;
-           $.ajax({
-              url: "/ValidateToken",
-              type: "POST",
-              data: {tokenString: tokenString},
-              success: function(data) {
-                    console.log('Token is valid');
-                 // handle success response
-              },
-              error: function() {
-                    console.log('Token is invalid or expired');
-                 // handle error response
-              }
-           });
-        });
-    </script>
 </head>
 <body>
     <header>
